@@ -1,0 +1,90 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <memory> // Pro použití std::unique_ptr
+
+
+class Tvar {
+public:
+    Tvar() {};
+    virtual ~Tvar() {};
+    
+    virtual float obvod() = 0;
+    virtual float obsah() = 0;
+    virtual std::string jmeno() = 0;
+};
+
+// --- Třída Kruh odvozená z Tvar ---
+class Kruh : public Tvar {
+private:
+    float polomer;
+    const float PI = 3.14159f;
+
+public:
+    Kruh(float r) : polomer(r) {}
+
+    // Přepisování virtuálních metod
+    float obvod() override {
+        // Obvod: 2 * PI * r
+        return 2.0f * PI * polomer;
+    }
+
+    float obsah() override {
+        // Obsah: PI * r^2
+        return PI * polomer * polomer;
+    }
+
+    std::string jmeno() override {
+        return "Kruh";
+    }
+};
+
+// --- Třída Ctverec odvozená z Tvar ---
+class Ctverec : public Tvar {
+private:
+    float strana;
+
+public:
+    Ctverec(float s) : strana(s) {}
+
+    // Přepisování virtuálních metod
+    float obvod() override {
+        // Obvod: 4 * strana
+        return 4.0f * strana;
+    }
+
+    float obsah() override {
+        // Obsah: strana^2
+        return strana * strana;
+    }
+
+    std::string jmeno() override {
+        return "Ctverec";
+    }
+};
+
+
+void vypisInfo(Tvar* t) {
+    std::cout << "" << t->jmeno() << "" << std::endl;
+    std::cout << "Obvod: " << t->obvod() << std::endl;
+    std::cout << "Obsah: " << t->obsah() << std::endl;
+    std::cout << std::endl;
+}
+
+int main()
+{
+    // Použití vektoru pro uchování různých tvarů
+    std::vector<std::unique_ptr<Tvar>> tvary;
+    
+    // Vytvoření objektů Kruh a Ctverec
+    tvary.push_back(std::make_unique<Kruh>(5.0f));
+    tvary.push_back(std::make_unique<Ctverec>(4.0f));
+
+    // Iterace přes vektor - pro každou položku se zavolá správná (virtuální) metoda
+    for (const auto& tvar : tvary) {
+        vypisInfo(tvar.get());
+    }
+
+    return 0;
+};
